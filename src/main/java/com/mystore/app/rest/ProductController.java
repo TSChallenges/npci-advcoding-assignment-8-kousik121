@@ -5,8 +5,11 @@ import com.mystore.app.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -25,8 +28,8 @@ public class ProductController {
     }
 
     @GetMapping("")
-    public List<Product> getAllProducts() {
-        return productService.getAllProducts();
+    public Page<Product> getAllProducts(@RequestParam("page") Integer page, @RequestParam("pageSize") Integer pageSize, @RequestParam("sortBy") String sortBy, @RequestParam("sortDir") String sortDir) {
+        return productService.getAllProducts(page, pageSize, sortBy, sortDir);
     }
 
 
@@ -56,16 +59,28 @@ public class ProductController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
-    // TODO: API to search products by name
+    @GetMapping("/search")
+    public List<Product> searchByProductName(@RequestParam("name") String name) {
+        return productService.searchByProductName(name);
+    }
 
 
-    // TODO: API to filter products by category
+    @GetMapping("/filter/category")
+    public List<Product> searchByProductCategory(@RequestParam("category") String category) {
+        return productService.searchByProductCategory(category);
+    }
 
 
-    // TODO: API to filter products by price range
+    @GetMapping("/filter/price")
+    public List<Product> searchByPriceRange(@RequestParam("minPrice") Double minPrice, @RequestParam("maxPrice") Double maxPrice) {
+        return productService.searchByProductPrice(minPrice, maxPrice);
+    }
 
 
-    // TODO: API to filter products by stock quantity range
+    @GetMapping("/filter/stock")
+    public List<Product> searchByStockRange(@RequestParam("minStock") Integer minStock, @RequestParam("maxStock") Integer maxStock) {
+        return productService.searchByProductStock(minStock, maxStock);
+    }
 
 
 }

@@ -3,8 +3,12 @@ package com.mystore.app.service;
 import com.mystore.app.entity.Product;
 import com.mystore.app.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.print.attribute.standard.PageRanges;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,8 +26,17 @@ public class ProductService {
         return product;
     }
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public Page<Product> getAllProducts(Integer page, Integer pageSize, String sortBy, String sortDir) {
+        Sort.Direction direction = Sort.DEFAULT_DIRECTION;
+        if (sortDir.equalsIgnoreCase("Asc")) {
+            direction = Sort.Direction.ASC;
+        }
+        if (sortDir.equalsIgnoreCase("Desc")) {
+            direction = Sort.Direction.DESC;
+        }
+        Sort sort = Sort.by(direction, sortBy);
+        PageRequest pageRequest = PageRequest.of(page, pageSize, sort);
+        return productRepository.findAll(pageRequest);
     }
 
     public Product getProduct(Integer id) {
@@ -49,16 +62,25 @@ public class ProductService {
         return "Product Deleted Successfully";
     }
 
-    // TODO: Method to search products by name
+    public List<Product> searchByProductName(String name) {
+        return productRepository.findByNameContainsIgnoreCase(name);
+    }
 
 
-    // TODO: Method to filter products by category
+    public List<Product> searchByProductCategory(String category) {
+        return productRepository.findByCategory(category);
+    }
 
 
-    // TODO: Method to filter products by price range
+    public List<Product> searchByProductPrice(Double minPrice, Double maxPrice) {
+        return productRepository.findByPriceBetween(minPrice, maxPrice);
+    }
 
 
-    // TODO: Method to filter products by stock quantity range
+
+    public List<Product> searchByProductStock(Integer minStock, Integer maxStock) {
+        return productRepository.findByStockQuantityBetween(minStock, maxStock);
+    }
 
 
 }

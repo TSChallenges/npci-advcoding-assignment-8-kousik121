@@ -15,6 +15,14 @@ import java.util.Map;
 @ControllerAdvice
 public class MyGlobalExceptionHandler {
 
-    // TODO
+    @ExceptionHandler(exception = MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException exception) {
+        BindingResult bindingResult = exception.getBindingResult();
+        Map<String, String> errorMessages = new HashMap<>();
+        for(FieldError error: bindingResult.getFieldErrors()) {
+            errorMessages.put(error.getField(), error.getDefaultMessage());
+        }
+        return new ResponseEntity<>(errorMessages, HttpStatus.BAD_REQUEST);
+    }
 
 }
